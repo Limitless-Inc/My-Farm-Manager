@@ -630,19 +630,34 @@
   /* ── Market search ───────────────────────────── */
   async function initMarketSearch() {
     const input = qs('marketSearch');
-    if (!input) return;
-    input.addEventListener('input', async () => {
-      const q = input.value.trim().toLowerCase();
-      const list = qs('productList');
-      if (!list) return;
-      const items = await load('mf_products');
-      const filtered = q
-        ? items.filter(p => (p.prodName || '').toLowerCase().includes(q) || (p.prodLocation || '').toLowerCase().includes(q) || (p.prodCategory || '').toLowerCase().includes(q))
-        : items;
-      if (!filtered.length) { list.innerHTML = '<li class="empty-state">No products match your search.</li>'; return; }
-      list.innerHTML = filtered.map(it => renderProduct(it)).join('');
-      await attachActions(list, 'mf_products', () => initMarketSearch());
-    });
+    const list = qs('productList');
+    if (!list) return;
+
+    async function displayProducts(searchQuery = '') {
+      try {
+        const items = await load('mf_products');
+        const filtered = searchQuery
+          ? items.filter(p => (p.prodName || '').toLowerCase().includes(searchQuery) || (p.prodLocation || '').toLowerCase().includes(searchQuery) || (p.prodCategory || '').toLowerCase().includes(searchQuery))
+          : items;
+        if (!filtered.length) { list.innerHTML = '<li class="empty-state">No products match your search.</li>'; return; }
+        list.innerHTML = filtered.map(it => renderProduct(it)).join('');
+        await attachActions(list, 'mf_products', () => initMarketSearch());
+      } catch (err) {
+        console.error(err);
+        list.innerHTML = '<li class="empty-state">Error loading products.</li>';
+      }
+    }
+
+    // Load products on page load
+    await displayProducts();
+
+    // Handle search input
+    if (input) {
+      input.addEventListener('input', async () => {
+        const q = input.value.trim().toLowerCase();
+        await displayProducts(q);
+      });
+    }
   }
 
   /* ── Video modal ─────────────────────────────── */
