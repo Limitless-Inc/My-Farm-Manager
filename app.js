@@ -42,7 +42,7 @@
 
     if (currentUser) {
       // User is logged in
-      authButtons.forEach(btn => btn.style.display = 'inline-block');
+      authButtons.forEach(btn => btn.style.display = 'block');
       publicOnly.forEach(el => el.style.display = 'none');
       if (userInfo) {
         userInfo.innerHTML = `
@@ -63,6 +63,13 @@
         qs('loginBtn').addEventListener('click', showLoginModal);
         qs('signupBtn').addEventListener('click', showSignupModal);
       }
+      // Also attach listeners to any login/signup buttons in public-only sections
+      document.querySelectorAll('.public-only #loginBtn').forEach(btn => {
+        btn.addEventListener('click', showLoginModal);
+      });
+      document.querySelectorAll('.public-only #signupBtn').forEach(btn => {
+        btn.addEventListener('click', showSignupModal);
+      });
     }
   }
 
@@ -885,6 +892,12 @@
 
   /* ── Boot ────────────────────────────────────── */
   document.addEventListener('DOMContentLoaded', async () => {
+    // Initialize auth state listener
+    onAuthStateChange((event, session) => {
+      currentUser = session?.user || null;
+      updateAuthUI();
+    });
+
     initNav();
     initPostToggle();
     await initSearch();

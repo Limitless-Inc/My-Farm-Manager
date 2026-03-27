@@ -81,6 +81,14 @@ ul { list-style: none; }
   font-size: 22px; cursor: pointer; color: var(--green);
 }
 
+/* User Info */
+.user-info {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 14px; font-weight: 500;
+}
+.user-info span { color: var(--text); }
+.user-info .btn { font-size: 13px; padding: 6px 12px; }
+
 /* ── Container ─────────────────────────────────── */
 .container { max-width: 1080px; margin: 28px auto; padding: 0 18px; }
 .container > h2 { font-size: 22px; margin-bottom: 18px; color: var(--green-d); }

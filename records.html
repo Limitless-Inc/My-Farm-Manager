@@ -23,12 +23,24 @@
       <a href="market.html">Market</a>
       <a href="weather.html">Weather</a>
     </nav>
+    <div id="userInfo" class="user-info"></div>
     <button class="nav-toggle" aria-label="Menu">☰</button>
   </header>
 
   <main class="container">
 
+    <!-- ── LOGIN PROMPT ── -->
+    <div class="public-only" style="text-align: center; padding: 40px 20px; background: var(--card); border-radius: var(--radius); margin-bottom: 30px;">
+      <h2>🔒 Private Records</h2>
+      <p>Your farm records are private and secure. Please log in to view and manage your records.</p>
+      <div style="margin-top: 20px;">
+        <button id="loginBtn" class="btn">Login</button>
+        <button id="signupBtn" class="btn btn-outline" style="margin-left: 10px;">Sign Up</button>
+      </div>
+    </div>
+
     <!-- ── RECORDS ── -->
+    <div class="auth-required">
     <h2>📋 Farm Records</h2>
     <div class="summary-strip" id="recordSummary"></div>
 
@@ -65,6 +77,7 @@
     </div>
 
     <ul id="recordsList" class="cards-grid"></ul>
+    </div>
 
     <!-- ── ALARMS ── -->
     <div class="alarm-section">

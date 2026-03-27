@@ -23,13 +23,14 @@
       <a href="market.html" class="active">Market</a>
       <a href="weather.html">Weather</a>
     </nav>
+    <div id="userInfo" class="user-info"></div>
     <button class="nav-toggle" aria-label="Menu">☰</button>
   </header>
 
   <main class="container">
     <div class="page-header">
       <h2>🛒 Market</h2>
-      <button class="btn post-toggle-btn" data-target="productForm">+ List a Product</button>
+      <button class="btn post-toggle-btn auth-required" data-target="productForm">+ List a Product</button>
     </div>
 
     <form id="productForm" class="card-form post-form hidden">
