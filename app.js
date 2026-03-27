@@ -839,6 +839,18 @@
       updateAuthUI();
     });
 
+    // Check for existing session on page load
+    try {
+      const { data: { user } } = await sb.auth.getUser();
+      if (user) {
+        console.log('Found existing user session:', user.email);
+        currentUser = user;
+        updateAuthUI();
+      }
+    } catch (error) {
+      console.log('No existing session found');
+    }
+
     initNav();
     initPostToggle();
     await initSearch();

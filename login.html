@@ -38,6 +38,8 @@
   <script src="supabase.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', async () => {
+      console.log('Login page loaded, supabase available:', !!window.supabase);
+
       const form = document.getElementById('loginForm');
       const emailInput = document.getElementById('email');
       const passwordInput = document.getElementById('password');
@@ -54,13 +56,15 @@
         }
 
         try {
-          const { data, error } = await supabase.auth.signInWithPassword({
+          console.log('Attempting login with:', email);
+          const { data, error } = await window.supabase.auth.signInWithPassword({
             email: email,
             password: password
           });
 
           if (error) throw error;
 
+          console.log('Login successful, user:', data.user);
           alert('Login successful! Redirecting...');
           window.location.href = 'index.html';
         } catch (error) {

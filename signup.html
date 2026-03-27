@@ -48,6 +48,8 @@
   <script src="supabase.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', async () => {
+      console.log('Signup page loaded, supabase available:', !!window.supabase);
+
       const form = document.getElementById('signupForm');
       const nameInput = document.getElementById('name');
       const emailInput = document.getElementById('email');
@@ -78,7 +80,8 @@
         }
 
         try {
-          const { data, error } = await supabase.auth.signUp({
+          console.log('Attempting signup with:', email, name);
+          const { data, error } = await window.supabase.auth.signUp({
             email: email,
             password: password,
             options: {
@@ -90,6 +93,7 @@
 
           if (error) throw error;
 
+          console.log('Signup successful, user:', data.user);
           alert('Account created successfully! Please check your email to verify your account, then sign in.');
           window.location.href = 'login.html';
         } catch (error) {
