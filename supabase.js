@@ -2,6 +2,9 @@ const SUPA_URL = 'https://znchlwpfpgeatlwanrir.supabase.co';
 const SUPA_KEY = 'sb_publishable_-sxPcBCfjOIzbsCbb4LoGw_YaiuJFP0';
 const sb = supabase.createClient(SUPA_URL, SUPA_KEY);
 
+// Expose supabase client globally for auth pages
+window.supabase = sb;
+
 /* Map storage keys to table names */
 const TABLE = {
   mf_records:     'records',

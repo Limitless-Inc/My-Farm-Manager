@@ -60,18 +60,16 @@
       publicOnly.forEach(el => el.style.display = 'block');
       if (userInfo) {
         userInfo.innerHTML = `
-          <button id="loginBtn" class="btn btn-outline">Login</button>
-          <button id="signupBtn" class="btn">Sign Up</button>
+          <a href="login.html" class="btn btn-outline">Login</a>
+          <a href="signup.html" class="btn">Sign Up</a>
         `;
-        qs('loginBtn').addEventListener('click', showLoginModal);
-        qs('signupBtn').addEventListener('click', showSignupModal);
       }
       // Also attach listeners to any login/signup buttons in public-only sections
-      document.querySelectorAll('.public-only #loginBtn').forEach(btn => {
-        btn.addEventListener('click', showLoginModal);
+      document.querySelectorAll('.public-only a[href="login.html"]').forEach(link => {
+        // Links work automatically, no need for event listeners
       });
-      document.querySelectorAll('.public-only #signupBtn').forEach(btn => {
-        btn.addEventListener('click', showSignupModal);
+      document.querySelectorAll('.public-only a[href="signup.html"]').forEach(link => {
+        // Links work automatically, no need for event listeners
       });
     }
   }
@@ -88,68 +86,6 @@
       console.error(err);
       toast('Error logging out', 'error');
     }
-  }
-
-  function showLoginModal() {
-    showAuthModal('login');
-  }
-
-  function showSignupModal() {
-    showAuthModal('signup');
-  }
-
-  function showAuthModal(type) {
-    const modal = document.createElement('div');
-    modal.className = 'modal';
-    modal.innerHTML = `
-      <div class="modal-content">
-        <span class="modal-close">&times;</span>
-        <h3>${type === 'login' ? 'Login' : 'Sign Up'}</h3>
-        <form id="authForm">
-          <div class="form-group">
-            <label>Email:</label>
-            <input type="email" id="authEmail" required>
-          </div>
-          <div class="form-group">
-            <label>Password:</label>
-            <input type="password" id="authPassword" required minlength="6">
-          </div>
-          ${type === 'signup' ? `
-          <div class="form-group">
-            <label>Full Name:</label>
-            <input type="text" id="authName" required>
-          </div>
-          ` : ''}
-          <button type="submit" class="btn">${type === 'login' ? 'Login' : 'Sign Up'}</button>
-        </form>
-      </div>
-    `;
-    document.body.appendChild(modal);
-
-    const form = qs('authForm');
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const email = qs('authEmail').value;
-      const password = qs('authPassword').value;
-
-      try {
-        if (type === 'login') {
-          await signIn(email, password);
-          toast('Login successful!');
-        } else {
-          const name = qs('authName').value;
-          await signUp(email, password, name);
-          toast('Account created! Please check your email to verify.');
-        }
-        modal.remove();
-      } catch (err) {
-        console.error(err);
-        toast(err.message || 'Authentication failed', 'error');
-      }
-    });
-
-    modal.querySelector('.modal-close').addEventListener('click', () => modal.remove());
-    modal.addEventListener('click', (e) => { if (e.target === modal) modal.remove(); });
   }
 
   /* badge colour by category */

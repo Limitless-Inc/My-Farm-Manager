@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Login - My-Farm-Manager</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body id="auth-page">
+  <div class="auth-container">
+    <div class="auth-card">
+      <div class="auth-header">
+        <h1>🌱 My-Farm-Manager</h1>
+        <p>Welcome back! Please sign in to your account.</p>
+      </div>
+
+      <form id="loginForm" class="auth-form">
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input type="email" id="email" placeholder="Enter your email" required>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" placeholder="Enter your password" required>
+        </div>
+
+        <button type="submit" class="btn btn-full">Sign In</button>
+      </form>
+
+      <div class="auth-links">
+        <p>Don't have an account? <a href="signup.html">Sign up here</a></p>
+        <p><a href="index.html">← Back to Home</a></p>
+      </div>
+    </div>
+  </div>
+
+  <script src="supabase.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const form = document.getElementById('loginForm');
+      const emailInput = document.getElementById('email');
+      const passwordInput = document.getElementById('password');
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const email = emailInput.value.trim();
+        const password = passwordInput.value;
+
+        if (!email || !password) {
+          alert('Please fill in all fields');
+          return;
+        }
+
+        try {
+          const { data, error } = await supabase.auth.signInWithPassword({
+            email: email,
+            password: password
+          });
+
+          if (error) throw error;
+
+          alert('Login successful! Redirecting...');
+          window.location.href = 'index.html';
+        } catch (error) {
+          console.error('Login error:', error);
+          alert('Login failed: ' + error.message);
+        }
+      });
+    });
+  </script>
+</body>
+</html>
