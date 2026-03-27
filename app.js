@@ -36,12 +36,14 @@
 
   /* ── Auth UI Management ──────────────────────── */
   function updateAuthUI() {
+    console.log('updateAuthUI called, currentUser:', currentUser);
     const authButtons = document.querySelectorAll('.auth-required');
     const publicOnly = document.querySelectorAll('.public-only');
     const userInfo = qs('userInfo');
 
     if (currentUser) {
       // User is logged in
+      console.log('User is logged in:', currentUser.email);
       authButtons.forEach(btn => btn.style.display = 'block');
       publicOnly.forEach(el => el.style.display = 'none');
       if (userInfo) {
@@ -53,6 +55,7 @@
       }
     } else {
       // User is not logged in
+      console.log('User is not logged in');
       authButtons.forEach(btn => btn.style.display = 'none');
       publicOnly.forEach(el => el.style.display = 'block');
       if (userInfo) {
@@ -893,7 +896,9 @@
   /* ── Boot ────────────────────────────────────── */
   document.addEventListener('DOMContentLoaded', async () => {
     // Initialize auth state listener
+    console.log('Setting up auth state listener');
     onAuthStateChange((event, session) => {
+      console.log('Auth state changed:', event, session?.user?.email);
       currentUser = session?.user || null;
       updateAuthUI();
     });
