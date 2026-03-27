@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Market — My-Farm-Manager</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body id="market">
+  <header class="site-header">
+    <div class="header-left">
+      <div class="brand">🌱 My-Farm-Manager</div>
+      <div class="search">
+        <input id="globalSearch" placeholder="Search…" autocomplete="off">
+        <div id="searchResults" class="search-results"></div>
+      </div>
+    </div>
+    <nav class="main-nav">
+      <a href="index.html">Home</a>
+      <a href="records.html">Records</a>
+      <a href="innovation.html">Innovation</a>
+      <a href="news.html">News</a>
+      <a href="market.html" class="active">Market</a>
+      <a href="weather.html">Weather</a>
+    </nav>
+    <button class="nav-toggle" aria-label="Menu">☰</button>
+  </header>
+
+  <main class="container">
+    <div class="page-header">
+      <h2>🛒 Market</h2>
+      <button class="btn post-toggle-btn" data-target="productForm">+ List a Product</button>
+    </div>
+
+    <form id="productForm" class="card-form post-form hidden">
+      <h3>List a Product</h3>
+      <div class="form-row">
+        <label>Product Name <input type="text" id="prodName" placeholder="e.g. Fresh Matooke" required></label>
+        <label>Category
+          <select id="prodCategory">
+            <option value="crops">Crops</option>
+            <option value="vegetables">Vegetables</option>
+            <option value="fruits">Fruits</option>
+            <option value="livestock">Livestock</option>
+            <option value="dairy">Dairy</option>
+            <option value="seeds">Seeds</option>
+            <option value="equipment">Equipment</option>
+          </select>
+        </label>
+      </div>
+      <div class="form-row">
+        <label>Price (UGX) <input type="number" id="prodPrice" min="0" placeholder="0"></label>
+        <label>Quantity <input type="text" id="prodQty" placeholder="e.g. 50 kg, 10 crates"></label>
+      </div>
+      <div class="form-row">
+        <label>Location <input type="text" id="prodLocation" placeholder="e.g. Kampala"></label>
+        <label>Contact <input type="text" id="prodContact" placeholder="07XX XXX XXX"></label>
+      </div>
+      <label>Description <textarea id="prodDesc" placeholder="Condition, variety, delivery options…"></textarea></label>
+      <label>Photo <input type="file" id="prodPhoto" accept="image/*"></label>
+      <div id="prodPreview" class="img-preview"></div>
+      <div class="form-actions">
+        <button type="button" class="btn btn-outline post-cancel-btn" data-target="productForm">Cancel</button>
+        <button type="submit" class="btn">List Product</button>
+      </div>
+    </form>
+
+    <div class="market-toolbar">
+      <input id="marketSearch" class="market-search" placeholder="🔍 Search products…" autocomplete="off">
+      <div class="filter-row">
+        <button class="chip active" data-filter="all">All</button>
+        <button class="chip" data-filter="crops">Crops</button>
+        <button class="chip" data-filter="vegetables">Vegetables</button>
+        <button class="chip" data-filter="fruits">Fruits</button>
+        <button class="chip" data-filter="livestock">Livestock</button>
+        <button class="chip" data-filter="seeds">Seeds</button>
+        <button class="chip" data-filter="equipment">Equipment</button>
+      </div>
+    </div>
+
+    <ul id="productList" class="cards-grid"></ul>
+  </main>
+
+  <footer class="site-footer">© My-Farm-Manager</footer>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

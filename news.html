@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>News — My-Farm-Manager</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body id="news">
+  <header class="site-header">
+    <div class="header-left">
+      <div class="brand">🌱 My-Farm-Manager</div>
+      <div class="search">
+        <input id="globalSearch" placeholder="Search…" autocomplete="off">
+        <div id="searchResults" class="search-results"></div>
+      </div>
+    </div>
+    <nav class="main-nav">
+      <a href="index.html">Home</a>
+      <a href="records.html">Records</a>
+      <a href="innovation.html">Innovation</a>
+      <a href="news.html" class="active">News</a>
+      <a href="market.html">Market</a>
+      <a href="weather.html">Weather</a>
+    </nav>
+    <button class="nav-toggle" aria-label="Menu">☰</button>
+  </header>
+
+  <main class="container">
+    <div class="page-header">
+      <h2>📰 News & Awareness</h2>
+      <button class="btn post-toggle-btn" data-target="newsForm">+ Post News</button>
+    </div>
+
+    <form id="newsForm" class="card-form post-form hidden">
+      <h3>Post News</h3>
+      <div class="form-row">
+        <label>Headline <input type="text" id="newsTitle" placeholder="Short, clear headline" required></label>
+        <label>Category
+          <select id="newsCategory">
+            <option value="tips">Farming Tips</option>
+            <option value="disease">Disease Alert</option>
+            <option value="government">Government</option>
+            <option value="weather-alert">Weather Alert</option>
+            <option value="market-price">Market Price</option>
+            <option value="general">General</option>
+          </select>
+        </label>
+      </div>
+      <label>Details <textarea id="newsBody" placeholder="Full story or details…"></textarea></label>
+      <div class="form-row">
+        <label>Photo <input type="file" id="newsPhoto" accept="image/*"></label>
+        <label>Video <input type="file" id="newsVideo" accept="video/*"></label>
+      </div>
+      <div id="newsPreview" class="img-preview"></div>
+      <div id="newsVidPreview" class="vid-preview"></div>
+      <div class="form-actions">
+        <button type="button" class="btn btn-outline post-cancel-btn" data-target="newsForm">Cancel</button>
+        <button type="submit" class="btn">Publish</button>
+      </div>
+    </form>
+
+    <div class="filter-row">
+      <button class="chip active" data-filter="all">All</button>
+      <button class="chip" data-filter="disease">Disease</button>
+      <button class="chip" data-filter="tips">Tips</button>
+      <button class="chip" data-filter="government">Government</button>
+      <button class="chip" data-filter="weather-alert">Weather Alert</button>
+      <button class="chip" data-filter="market-price">Market Price</button>
+    </div>
+
+    <ul id="newsList" class="cards-grid"></ul>
+  </main>
+
+  <!-- Video modal -->
+  <div id="videoModal" class="video-modal" role="dialog" aria-modal="true" aria-label="Video player">
+    <div class="video-modal-inner">
+      <div class="video-main">
+        <button class="modal-close" id="modalClose">✕</button>
+        <video id="modalVideo" controls></video>
+        <div class="video-info">
+          <div class="video-info-title" id="modalTitle"></div>
+          <div class="video-info-meta" id="modalMeta"></div>
+        </div>
+      </div>
+      <div class="video-sidebar" id="videoSidebar"></div>
+    </div>
+  </div>
+
+  <footer class="site-footer">© My-Farm-Manager</footer>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

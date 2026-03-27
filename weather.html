@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Weather — My-Farm-Manager</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body id="weather">
+  <header class="site-header">
+    <div class="header-left">
+      <div class="brand">🌱 My-Farm-Manager</div>
+      <div class="search">
+        <input id="globalSearch" placeholder="Search…" autocomplete="off">
+        <div id="searchResults" class="search-results"></div>
+      </div>
+    </div>
+    <nav class="main-nav">
+      <a href="index.html">Home</a>
+      <a href="records.html">Records</a>
+      <a href="innovation.html">Innovation</a>
+      <a href="news.html">News</a>
+      <a href="market.html">Market</a>
+      <a href="weather.html" class="active">Weather</a>
+    </nav>
+    <button class="nav-toggle" aria-label="Menu">☰</button>
+  </header>
+
+  <main class="container">
+    <h2>🌤️ Weather Forecast</h2>
+    <p class="muted">Default: Kampala, Uganda. Click below to use your location.</p>
+
+    <div class="weather-toolbar">
+      <button id="useLocation" class="btn">📍 Use My Location</button>
+    </div>
+
+    <div id="currentWeather" class="weather-now card"></div>
+
+    <h3>5-Day Forecast</h3>
+    <div id="forecast" class="forecast-grid"></div>
+
+    <div id="farmAdvice" class="advice-box"></div>
+  </main>
+
+  <footer class="site-footer">© My-Farm-Manager</footer>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>My-Farm-Manager</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body id="home">
+  <header class="site-header">
+    <div class="header-left">
+      <div class="brand">🌱 My-Farm-Manager</div>
+      <div class="search">
+        <input id="globalSearch" placeholder="Search innovations, news, products…" autocomplete="off">
+        <div id="searchResults" class="search-results"></div>
+      </div>
+    </div>
+    <nav class="main-nav">
+      <a href="index.html" class="active">Home</a>
+      <a href="records.html">Records</a>
+      <a href="innovation.html">Innovation</a>
+      <a href="news.html">News</a>
+      <a href="market.html">Market</a>
+      <a href="weather.html">Weather</a>
+    </nav>
+    <button class="nav-toggle" aria-label="Menu">☰</button>
+  </header>
+
+  <main class="container">
+
+    <section class="hero">
+      <div class="hero-text">
+        <h1>Your Farm, Organised</h1>
+        <p>Records · Innovations · News · Market · Weather — all in one place for Ugandan farmers.</p>
+        <div class="hero-actions">
+          <a href="records.html" class="btn">+ Add Record</a>
+          <a href="market.html" class="btn btn-outline">Browse Market</a>
+        </div>
+      </div>
+      <div class="hero-stats" id="heroStats">
+        <div class="stat-pill" id="statRecords">— Records</div>
+        <div class="stat-pill" id="statProducts">— Products</div>
+        <div class="stat-pill" id="statNews">— News</div>
+        <div class="stat-pill" id="statInnovations">— Innovations</div>
+      </div>
+    </section>
+
+    <section class="tip-bar" id="tipBar"></section>
+
+    <section class="features">
+      <a href="records.html" class="feature-card">
+        <span class="feat-icon">📋</span>
+        <h3>Records</h3>
+        <p>Log crops, expenses, harvests and set date reminders.</p>
+      </a>
+      <a href="innovation.html" class="feature-card">
+        <span class="feat-icon">💡</span>
+        <h3>Innovation</h3>
+        <p>Share and discover smart farming ideas with photos.</p>
+      </a>
+      <a href="news.html" class="feature-card">
+        <span class="feat-icon">📰</span>
+        <h3>News</h3>
+        <p>Plant health alerts, government programs, weather warnings.</p>
+      </a>
+      <a href="market.html" class="feature-card">
+        <span class="feat-icon">🛒</span>
+        <h3>Market</h3>
+        <p>List produce with price, quantity and contact info.</p>
+      </a>
+      <a href="weather.html" class="feature-card">
+        <span class="feat-icon">🌤️</span>
+        <h3>Weather</h3>
+        <p>Live forecast + farming advice for your location.</p>
+      </a>
+    </section>
+
+    <section class="recent-section">
+      <h2>Recent Activity</h2>
+      <ul id="recentFeed" class="feed-list"></ul>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    © My-Farm-Manager
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

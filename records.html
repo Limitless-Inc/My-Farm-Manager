@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Records — My-Farm-Manager</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body id="records">
+  <header class="site-header">
+    <div class="header-left">
+      <div class="brand">🌱 My-Farm-Manager</div>
+      <div class="search">
+        <input id="globalSearch" placeholder="Search…" autocomplete="off">
+        <div id="searchResults" class="search-results"></div>
+      </div>
+    </div>
+    <nav class="main-nav">
+      <a href="index.html">Home</a>
+      <a href="records.html" class="active">Records</a>
+      <a href="innovation.html">Innovation</a>
+      <a href="news.html">News</a>
+      <a href="market.html">Market</a>
+      <a href="weather.html">Weather</a>
+    </nav>
+    <button class="nav-toggle" aria-label="Menu">☰</button>
+  </header>
+
+  <main class="container">
+
+    <!-- ── RECORDS ── -->
+    <h2>📋 Farm Records</h2>
+    <div class="summary-strip" id="recordSummary"></div>
+
+    <form id="recordForm" class="card-form">
+      <h3>New Record</h3>
+      <div class="form-row">
+        <label>Title <input type="text" id="recTitle" placeholder="e.g. Planted maize" required></label>
+        <label>Category
+          <select id="recCategory">
+            <option value="crop">Crop</option>
+            <option value="harvest">Harvest</option>
+            <option value="expense">Expense</option>
+            <option value="income">Income</option>
+            <option value="livestock">Livestock</option>
+            <option value="general">General</option>
+          </select>
+        </label>
+      </div>
+      <div class="form-row">
+        <label>Amount (UGX) <input type="number" id="recAmount" min="0" placeholder="0"></label>
+        <label>Date of activity <input type="date" id="recWhen"></label>
+      </div>
+      <label>Notes <textarea id="recNotes" placeholder="Any extra details…"></textarea></label>
+      <button type="submit">Save Record</button>
+    </form>
+
+    <div class="filter-row" id="recFilters">
+      <button class="chip active" data-filter="all">All</button>
+      <button class="chip" data-filter="crop">Crop</button>
+      <button class="chip" data-filter="harvest">Harvest</button>
+      <button class="chip" data-filter="expense">Expense</button>
+      <button class="chip" data-filter="income">Income</button>
+      <button class="chip" data-filter="livestock">Livestock</button>
+    </div>
+
+    <ul id="recordsList" class="cards-grid"></ul>
+
+    <!-- ── ALARMS ── -->
+    <div class="alarm-section">
+      <h2>⏰ Reminders & Alarms</h2>
+      <p class="muted">Set a date and time — the app will alert you with a sound and notification when it's due.</p>
+
+      <form id="alarmForm" class="card-form">
+        <h3>New Reminder</h3>
+        <div class="form-row">
+          <label>Label <input type="text" id="alarmLabel" placeholder="e.g. Spray pesticides" required></label>
+          <label>Date &amp; Time <input type="datetime-local" id="alarmWhen" required></label>
+        </div>
+        <label>Note <input type="text" id="alarmNote" placeholder="Optional extra detail"></label>
+        <button type="submit">Set Reminder</button>
+      </form>
+
+      <ul id="alarmList" class="cards-grid"></ul>
+    </div>
+
+  </main>
+
+  <footer class="site-footer">© My-Farm-Manager</footer>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

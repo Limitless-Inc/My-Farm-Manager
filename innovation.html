@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Innovation — My-Farm-Manager</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body id="innovation">
+  <header class="site-header">
+    <div class="header-left">
+      <div class="brand">🌱 My-Farm-Manager</div>
+      <div class="search">
+        <input id="globalSearch" placeholder="Search…" autocomplete="off">
+        <div id="searchResults" class="search-results"></div>
+      </div>
+    </div>
+    <nav class="main-nav">
+      <a href="index.html">Home</a>
+      <a href="records.html">Records</a>
+      <a href="innovation.html" class="active">Innovation</a>
+      <a href="news.html">News</a>
+      <a href="market.html">Market</a>
+      <a href="weather.html">Weather</a>
+    </nav>
+    <button class="nav-toggle" aria-label="Menu">☰</button>
+  </header>
+
+  <main class="container">
+    <div class="page-header">
+      <h2>💡 Innovation Showcase</h2>
+      <button class="btn post-toggle-btn" data-target="innovationForm">+ Share Yours</button>
+    </div>
+
+    <form id="innovationForm" class="card-form post-form hidden">
+      <h3>Share an Innovation</h3>
+      <div class="form-row">
+        <label>Title <input type="text" id="invTitle" placeholder="e.g. Bottle drip irrigation" required></label>
+        <label>Category
+          <select id="invCategory">
+            <option value="irrigation">Irrigation</option>
+            <option value="plastic-farming">Plastic Farming</option>
+            <option value="organic">Organic</option>
+            <option value="technology">Technology</option>
+            <option value="storage">Storage</option>
+            <option value="other">Other</option>
+          </select>
+        </label>
+      </div>
+      <label>Description <textarea id="invDesc" placeholder="How does it work? What materials are needed?"></textarea></label>
+      <div class="form-row">
+        <label>Photo <input type="file" id="invPhoto" accept="image/*"></label>
+        <label>Video <input type="file" id="invVideo" accept="video/*"></label>
+      </div>
+      <div id="invPreview" class="img-preview"></div>
+      <div id="invVidPreview" class="vid-preview"></div>
+      <div class="form-actions">
+        <button type="button" class="btn btn-outline post-cancel-btn" data-target="innovationForm">Cancel</button>
+        <button type="submit" class="btn">Post Innovation</button>
+      </div>
+    </form>
+
+    <div class="filter-row">
+      <button class="chip active" data-filter="all">All</button>
+      <button class="chip" data-filter="irrigation">Irrigation</button>
+      <button class="chip" data-filter="plastic-farming">Plastic Farming</button>
+      <button class="chip" data-filter="organic">Organic</button>
+      <button class="chip" data-filter="technology">Technology</button>
+      <button class="chip" data-filter="storage">Storage</button>
+    </div>
+
+    <ul id="innovationList" class="cards-grid"></ul>
+  </main>
+
+  <!-- Video modal -->
+  <div id="videoModal" class="video-modal" role="dialog" aria-modal="true" aria-label="Video player">
+    <div class="video-modal-inner">
+      <div class="video-main">
+        <button class="modal-close" id="modalClose">✕</button>
+        <video id="modalVideo" controls></video>
+        <div class="video-info">
+          <div class="video-info-title" id="modalTitle"></div>
+          <div class="video-info-meta" id="modalMeta"></div>
+        </div>
+      </div>
+      <div class="video-sidebar" id="videoSidebar"></div>
+    </div>
+  </div>
+
+  <footer class="site-footer">© My-Farm-Manager</footer>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
