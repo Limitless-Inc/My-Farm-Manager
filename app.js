@@ -219,9 +219,14 @@
       list.querySelectorAll('.btn-del').forEach(b => b.addEventListener('click', async e => {
         if (!confirmDel()) return;
         const id = e.target.dataset.id;
-        await dbDelete(KEY, id);
-        await render();
-        toast('Record deleted', 'info');
+        try {
+          await dbDelete(KEY, id);
+          await render();
+          toast('Record deleted', 'info');
+        } catch (err) {
+          console.error(err);
+          toast('Failed to delete record.', 'error');
+        }
       }));
     }
 
@@ -237,10 +242,15 @@
         notes: qs('recNotes').value.trim(),
         created: Date.now()
       };
-      await dbInsert(KEY, item);
-      form.reset();
-      await render();
-      toast('Record saved!');
+      try {
+        await dbInsert(KEY, item);
+        form.reset();
+        await render();
+        toast('Record saved!');
+      } catch (err) {
+        console.error(err);
+        toast('Failed to save record. Check database setup.', 'error');
+      }
     });
 
     document.querySelectorAll('#recFilters .chip').forEach(chip => {
@@ -454,16 +464,21 @@
       data.image = preview && preview.dataset.src ? preview.dataset.src : null;
       data.video = vidPreview && vidPreview.dataset.src ? vidPreview.dataset.src : null;
       data.likes = 0;
-      await dbInsert(storageKey, data);
-      form.reset();
-      if (preview) { preview.innerHTML = ''; delete preview.dataset.src; }
-      if (vidPreview) { vidPreview.innerHTML = ''; delete vidPreview.dataset.src; }
-      /* auto-close form after posting */
-      form.classList.add('hidden');
-      const toggleBtn = document.querySelector(`.post-toggle-btn[data-target="${formId}"]`);
-      if (toggleBtn) toggleBtn.textContent = toggleBtn.dataset.defaultText;
-      await render();
-      toast('Posted! ✅');
+      try {
+        await dbInsert(storageKey, data);
+        form.reset();
+        if (preview) { preview.innerHTML = ''; delete preview.dataset.src; }
+        if (vidPreview) { vidPreview.innerHTML = ''; delete vidPreview.dataset.src; }
+        /* auto-close form after posting */
+        form.classList.add('hidden');
+        const toggleBtn = document.querySelector(`.post-toggle-btn[data-target="${formId}"]`);
+        if (toggleBtn) toggleBtn.textContent = toggleBtn.dataset.defaultText;
+        await render();
+        toast('Posted! ✅');
+      } catch (err) {
+        console.error(err);
+        toast('Failed to post. Check database setup.', 'error');
+      }
     });
 
     /* filter chips on this page */
@@ -484,32 +499,47 @@
     list.querySelectorAll('.btn-del').forEach(b => b.addEventListener('click', async e => {
       if (!confirmDel()) return;
       const id = e.target.dataset.id;
-      await dbDelete(storageKey, id);
-      await render();
-      toast('Deleted', 'info');
+      try {
+        await dbDelete(storageKey, id);
+        await render();
+        toast('Deleted', 'info');
+      } catch (err) {
+        console.error(err);
+        toast('Failed to delete.', 'error');
+      }
     }));
 
     /* like */
     list.querySelectorAll('.btn-like').forEach(b => b.addEventListener('click', async e => {
       const id = e.target.dataset.id;
-      const items = await load(storageKey);
-      const item = items.find(it => it.id == id);
-      if (item) {
-        item.likes = (item.likes || 0) + 1;
-        await dbUpdate(storageKey, id, { likes: item.likes });
-        e.target.textContent = `👍 ${item.likes}`;
+      try {
+        const items = await load(storageKey);
+        const item = items.find(it => it.id == id);
+        if (item) {
+          item.likes = (item.likes || 0) + 1;
+          await dbUpdate(storageKey, id, { likes: item.likes });
+          e.target.textContent = `👍 ${item.likes}`;
+        }
+      } catch (err) {
+        console.error(err);
+        toast('Failed to like.', 'error');
       }
     }));
 
     /* sold toggle */
     list.querySelectorAll('.btn-sold').forEach(b => b.addEventListener('click', async e => {
       const id = e.target.dataset.id;
-      const items = await load(storageKey);
-      const item = items.find(it => it.id == id);
-      if (item) {
-        item.sold = !item.sold;
-        await dbUpdate(storageKey, id, { sold: item.sold });
-        await render();
+      try {
+        const items = await load(storageKey);
+        const item = items.find(it => it.id == id);
+        if (item) {
+          item.sold = !item.sold;
+          await dbUpdate(storageKey, id, { sold: item.sold });
+          await render();
+        }
+      } catch (err) {
+        console.error(err);
+        toast('Failed to update.', 'error');
       }
     }));
 
