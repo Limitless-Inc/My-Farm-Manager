@@ -228,7 +228,56 @@ After creating tables, test by:
 - "Failed to post" = Database not set up or RLS denied access
 - Check Supabase logs for more details
 
----
+## Database Schema Update for Authentication
 
-## Need Help?
-If tables fail to create, try creating ONE table at a time using the individual SQL queries above.
+After setting up authentication, run this SQL to add user ownership columns:
+
+```sql
+-- Add user ownership columns to all tables
+ALTER TABLE products ADD COLUMN IF NOT EXISTS user_id UUID REFERENCES auth.users(id);
+ALTER TABLE products ADD COLUMN IF NOT EXISTS author_name TEXT;
+
+ALTER TABLE records ADD COLUMN IF NOT EXISTS user_id UUID REFERENCES auth.users(id);
+ALTER TABLE records ADD COLUMN IF NOT EXISTS author_name TEXT;
+
+ALTER TABLE innovations ADD COLUMN IF NOT EXISTS user_id UUID REFERENCES auth.users(id);
+ALTER TABLE innovations ADD COLUMN IF NOT EXISTS author_name TEXT;
+
+ALTER TABLE news ADD COLUMN IF NOT EXISTS user_id UUID REFERENCES auth.users(id);
+ALTER TABLE news ADD COLUMN IF NOT EXISTS author_name TEXT;
+
+-- Update RLS policies for authenticated access
+DROP POLICY IF EXISTS "Allow all operations" ON products;
+DROP POLICY IF EXISTS "Allow all operations" ON records;
+DROP POLICY IF EXISTS "Allow all operations" ON innovations;
+DROP POLICY IF EXISTS "Allow all operations" ON news;
+
+-- Public read access (anyone can view)
+CREATE POLICY "Public read access" ON products FOR SELECT USING (true);
+CREATE POLICY "Public read access" ON records FOR SELECT USING (true);
+CREATE POLICY "Public read access" ON innovations FOR SELECT USING (true);
+CREATE POLICY "Public read access" ON news FOR SELECT USING (true);
+
+-- Authenticated users can insert their own content
+CREATE POLICY "Users can insert own content" ON products FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users can insert own content" ON records FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users can insert own content" ON innovations FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users can insert own content" ON news FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+-- Users can update their own content (for likes, sold status, etc.)
+CREATE POLICY "Users can update own content" ON products FOR UPDATE USING (auth.uid() = user_id);
+CREATE POLICY "Users can update own content" ON records FOR UPDATE USING (auth.uid() = user_id);
+CREATE POLICY "Users can update own content" ON innovations FOR UPDATE USING (auth.uid() = user_id);
+CREATE POLICY "Users can update own content" ON news FOR UPDATE USING (auth.uid() = user_id);
+
+-- Users can delete only their own content
+CREATE POLICY "Users can delete own content" ON products FOR DELETE USING (auth.uid() = user_id);
+CREATE POLICY "Users can delete own content" ON records FOR DELETE USING (auth.uid() = user_id);
+CREATE POLICY "Users can delete own content" ON innovations FOR DELETE USING (auth.uid() = user_id);
+CREATE POLICY "Users can delete own content" ON news FOR DELETE USING (auth.uid() = user_id);
+
+-- Allow likes from authenticated users (special policy for likes)
+CREATE POLICY "Authenticated users can like" ON products FOR UPDATE USING (auth.role() = 'authenticated');
+CREATE POLICY "Authenticated users can like" ON innovations FOR UPDATE USING (auth.role() = 'authenticated');
+CREATE POLICY "Authenticated users can like" ON news FOR UPDATE USING (auth.role() = 'authenticated');
+```

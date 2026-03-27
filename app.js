@@ -1,6 +1,9 @@
 (function () {
   'use strict';
 
+  /* ── Global Auth State ───────────────────────── */
+  let currentUser = null;
+
   /* ── Helpers ─────────────────────────────────── */
   function qs(id) { return document.getElementById(id); }
   function escapeHTML(s) {
@@ -30,6 +33,114 @@
     setTimeout(() => t.remove(), 3000);
   }
   function confirmDel() { return confirm('Delete this item? This cannot be undone.'); }
+
+  /* ── Auth UI Management ──────────────────────── */
+  function updateAuthUI() {
+    const authButtons = document.querySelectorAll('.auth-required');
+    const publicOnly = document.querySelectorAll('.public-only');
+    const userInfo = qs('userInfo');
+
+    if (currentUser) {
+      // User is logged in
+      authButtons.forEach(btn => btn.style.display = 'inline-block');
+      publicOnly.forEach(el => el.style.display = 'none');
+      if (userInfo) {
+        userInfo.innerHTML = `
+          <span>Welcome, ${escapeHTML(currentUser.user_metadata?.name || currentUser.email)}!</span>
+          <button id="logoutBtn" class="btn btn-outline">Logout</button>
+        `;
+        qs('logoutBtn').addEventListener('click', handleLogout);
+      }
+    } else {
+      // User is not logged in
+      authButtons.forEach(btn => btn.style.display = 'none');
+      publicOnly.forEach(el => el.style.display = 'block');
+      if (userInfo) {
+        userInfo.innerHTML = `
+          <button id="loginBtn" class="btn btn-outline">Login</button>
+          <button id="signupBtn" class="btn">Sign Up</button>
+        `;
+        qs('loginBtn').addEventListener('click', showLoginModal);
+        qs('signupBtn').addEventListener('click', showSignupModal);
+      }
+    }
+  }
+
+  async function handleLogout() {
+    try {
+      await signOut();
+      currentUser = null;
+      updateAuthUI();
+      toast('Logged out successfully', 'info');
+      // Refresh current page to show public view
+      location.reload();
+    } catch (err) {
+      console.error(err);
+      toast('Error logging out', 'error');
+    }
+  }
+
+  function showLoginModal() {
+    showAuthModal('login');
+  }
+
+  function showSignupModal() {
+    showAuthModal('signup');
+  }
+
+  function showAuthModal(type) {
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.innerHTML = `
+      <div class="modal-content">
+        <span class="modal-close">&times;</span>
+        <h3>${type === 'login' ? 'Login' : 'Sign Up'}</h3>
+        <form id="authForm">
+          <div class="form-group">
+            <label>Email:</label>
+            <input type="email" id="authEmail" required>
+          </div>
+          <div class="form-group">
+            <label>Password:</label>
+            <input type="password" id="authPassword" required minlength="6">
+          </div>
+          ${type === 'signup' ? `
+          <div class="form-group">
+            <label>Full Name:</label>
+            <input type="text" id="authName" required>
+          </div>
+          ` : ''}
+          <button type="submit" class="btn">${type === 'login' ? 'Login' : 'Sign Up'}</button>
+        </form>
+      </div>
+    `;
+    document.body.appendChild(modal);
+
+    const form = qs('authForm');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = qs('authEmail').value;
+      const password = qs('authPassword').value;
+
+      try {
+        if (type === 'login') {
+          await signIn(email, password);
+          toast('Login successful!');
+        } else {
+          const name = qs('authName').value;
+          await signUp(email, password, name);
+          toast('Account created! Please check your email to verify.');
+        }
+        modal.remove();
+      } catch (err) {
+        console.error(err);
+        toast(err.message || 'Authentication failed', 'error');
+      }
+    });
+
+    modal.querySelector('.modal-close').addEventListener('click', () => modal.remove());
+    modal.addEventListener('click', (e) => { if (e.target === modal) modal.remove(); });
+  }
 
   /* badge colour by category */
   const BADGE = {
@@ -495,53 +606,71 @@
   }
 
   async function attachActions(list, storageKey, render) {
-    /* delete */
-    list.querySelectorAll('.btn-del').forEach(b => b.addEventListener('click', async e => {
-      if (!confirmDel()) return;
-      const id = e.target.dataset.id;
-      try {
-        await dbDelete(storageKey, id);
-        await render();
-        toast('Deleted', 'info');
-      } catch (err) {
-        console.error(err);
-        toast('Failed to delete.', 'error');
+    /* delete - only show for user's own posts */
+    list.querySelectorAll('.btn-del').forEach(b => {
+      const id = b.dataset.id;
+      const userId = b.dataset.userId;
+      if (currentUser && currentUser.id === userId) {
+        b.style.display = 'inline-block';
+        b.addEventListener('click', async e => {
+          if (!confirmDel()) return;
+          try {
+            await dbDelete(storageKey, id);
+            await render();
+            toast('Deleted', 'info');
+          } catch (err) {
+            console.error(err);
+            toast('Failed to delete.', 'error');
+          }
+        });
+      } else {
+        b.style.display = 'none';
       }
-    }));
+    });
 
-    /* like */
+    /* like - only for authenticated users */
     list.querySelectorAll('.btn-like').forEach(b => b.addEventListener('click', async e => {
+      if (!currentUser) {
+        toast('Please login to like posts', 'info');
+        return;
+      }
       const id = e.target.dataset.id;
       try {
-        const items = await load(storageKey);
-        const item = items.find(it => it.id == id);
-        if (item) {
-          item.likes = (item.likes || 0) + 1;
-          await dbUpdate(storageKey, id, { likes: item.likes });
-          e.target.textContent = `👍 ${item.likes}`;
-        }
+        await dbLike(storageKey, id);
+        // Update the like count in UI
+        const currentLikes = parseInt(e.target.textContent.match(/\d+/) || '0');
+        e.target.textContent = `👍 ${currentLikes + 1}`;
+        e.target.disabled = true; // Prevent multiple likes
       } catch (err) {
         console.error(err);
         toast('Failed to like.', 'error');
       }
     }));
 
-    /* sold toggle */
-    list.querySelectorAll('.btn-sold').forEach(b => b.addEventListener('click', async e => {
-      const id = e.target.dataset.id;
-      try {
-        const items = await load(storageKey);
-        const item = items.find(it => it.id == id);
-        if (item) {
-          item.sold = !item.sold;
-          await dbUpdate(storageKey, id, { sold: item.sold });
-          await render();
-        }
-      } catch (err) {
-        console.error(err);
-        toast('Failed to update.', 'error');
+    /* sold toggle - only for user's own products */
+    list.querySelectorAll('.btn-sold').forEach(b => {
+      const userId = b.dataset.userId;
+      if (currentUser && currentUser.id === userId) {
+        b.style.display = 'inline-block';
+        b.addEventListener('click', async e => {
+          const id = b.dataset.id;
+          try {
+            const items = await load(storageKey);
+            const item = items.find(it => it.id == id);
+            if (item) {
+              item.sold = !item.sold;
+              await dbUpdate(storageKey, id, { sold: item.sold });
+              await render();
+            }
+          } catch (err) {
+            console.error(err);
+            toast('Failed to update.', 'error');
+          }
+        });
+      } else {
+        b.style.display = 'none';
       }
-    }));
+    });
 
     /* read-more */
     list.querySelectorAll('.read-more-btn').forEach(b => b.addEventListener('click', e => {
@@ -558,6 +687,7 @@
     const vidBtn = it.video
       ? `<button class="btn-sm btn-play" data-video="${it.video}" data-title="${escapeHTML(it.invTitle || '')}">▶ Video</button>`
       : '';
+    const authorInfo = it.author_name ? `<div class="card-meta">👤 ${escapeHTML(it.author_name)}</div>` : '';
     return `<li>
       <div style="display:flex;justify-content:space-between;align-items:flex-start">
         <span class="card-title">${escapeHTML(it.invTitle || 'Untitled')}</span>
@@ -566,11 +696,12 @@
       ${img}
       <div class="card-body collapsed">${escapeHTML(it.invDesc || '')}</div>
       <button class="read-more-btn">Read more</button>
+      ${authorInfo}
       <div class="card-meta">${timeAgo(it.created)}</div>
       <div class="card-actions">
         <button class="btn-sm btn-like" data-id="${it.id}">👍 ${it.likes || 0}</button>
         ${vidBtn}
-        <button class="btn-sm btn-del"  data-id="${it.id}">Delete</button>
+        <button class="btn-sm btn-del" data-id="${it.id}" data-user-id="${it.user_id || ''}">Delete</button>
       </div>
     </li>`;
   }
@@ -584,6 +715,7 @@
     const vidBtn = it.video
       ? `<button class="btn-sm btn-play" data-video="${it.video}" data-title="${escapeHTML(it.newsTitle || '')}">▶ Video</button>`
       : '';
+    const authorInfo = it.author_name ? `<div class="card-meta">👤 ${escapeHTML(it.author_name)}</div>` : '';
     return `<li${it.pinned ? ' style="border-color:var(--amber);border-width:2px"' : ''}>
       <div style="display:flex;justify-content:space-between;align-items:flex-start">
         <span class="card-title">${pinned}${escapeHTML(it.newsTitle || 'Untitled')}</span>
@@ -592,11 +724,12 @@
       ${img}
       <div class="card-body collapsed">${escapeHTML(it.newsBody || '')}</div>
       <button class="read-more-btn">Read more</button>
+      ${authorInfo}
       <div class="card-meta">${timeAgo(it.created)}</div>
       <div class="card-actions">
         <button class="btn-sm btn-like" data-id="${it.id}">👍 ${it.likes || 0}</button>
         ${vidBtn}
-        <button class="btn-sm btn-del"  data-id="${it.id}">Delete</button>
+        <button class="btn-sm btn-del" data-id="${it.id}" data-user-id="${it.user_id || ''}">Delete</button>
       </div>
     </li>`;
   }
@@ -607,6 +740,7 @@
     const status = it.sold
       ? '<span class="sold-badge">SOLD</span>'
       : '<span class="available-badge">Available</span>';
+    const authorInfo = it.author_name ? `<div class="card-meta">👤 ${escapeHTML(it.author_name)}</div>` : '';
     return `<li>
       <div style="display:flex;justify-content:space-between;align-items:flex-start">
         <span class="card-title">${escapeHTML(it.prodName || 'Untitled')}</span>
@@ -618,11 +752,12 @@
       ${it.prodQty ? `<div class="card-meta">📦 ${escapeHTML(it.prodQty)}</div>` : ''}
       ${it.prodLocation ? `<div class="card-meta">📍 ${escapeHTML(it.prodLocation)}</div>` : ''}
       ${it.prodDesc ? `<div class="card-body">${escapeHTML(it.prodDesc)}</div>` : ''}
+      ${authorInfo}
       <div class="card-meta">${timeAgo(it.created)}</div>
       <div class="card-actions">
         ${it.prodContact ? `<a class="btn-sm btn-call" href="tel:${escapeHTML(it.prodContact)}">📞 Call</a>` : ''}
-        <button class="btn-sm btn-sold" data-id="${it.id}">${it.sold ? 'Mark Available' : 'Mark Sold'}</button>
-        <button class="btn-sm btn-del"  data-id="${it.id}">Delete</button>
+        <button class="btn-sm btn-sold" data-id="${it.id}" data-user-id="${it.user_id || ''}">${it.sold ? 'Mark Available' : 'Mark Sold'}</button>
+        <button class="btn-sm btn-del" data-id="${it.id}" data-user-id="${it.user_id || ''}">Delete</button>
       </div>
     </li>`;
   }
